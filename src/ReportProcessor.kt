@@ -16,7 +16,7 @@ class ReportProcessor {
     companion object {
         fun render(report: JasperReport, data: ReportData): ByteArray {
             val params = report.parameters.associateBy({ it.name }, { extractParamFromData(it, data) })
-            // TODO: implement JRDataSource which supplies data from Items array in JSON
+            // TODO: implement JRDataSource which supplies data via Items array in JSON
             val filled = JasperFillManager.fillReport(report, params)
             return exportToPdf(filled)
         }
