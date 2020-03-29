@@ -19,6 +19,11 @@ application {
     mainClassName = "io.ktor.server.netty.EngineMain"
 }
 
+buildScan {
+  termsOfServiceUrl = "https://gradle.com/terms-of-service"
+  termsOfServiceAgree = "yes" 
+}
+
 repositories {
     mavenLocal()
     jcenter()
