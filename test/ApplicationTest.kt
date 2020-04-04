@@ -5,7 +5,7 @@ import io.ktor.http.content.PartData
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import kotlinx.io.streams.asInput
+import io.ktor.utils.io.streams.asInput
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
