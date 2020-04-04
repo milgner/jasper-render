@@ -40,7 +40,9 @@ dependencies {
     testImplementation("org.apache.pdfbox:preflight:$pdfbox_version")
     testImplementation(platform("io.strikt:strikt-bom:0.25.0"))
     testImplementation("io.strikt:strikt-gradle")
+    testImplementation("net.sf.jasperreports:jasperreports-fonts:$jasperreports_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    testImplementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation(kotlin("script-runtime"))
 }
 

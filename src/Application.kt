@@ -46,7 +46,7 @@ fun Application.module(testing: Boolean = false) {
             val reportName = call.parameters["report"]!!
             val report = ReportRegistry.load(reportName)
             val input = UploadProcessor.parse(call.receiveMultipart())
-            val rendered = ReportProcessor.render(report, input)
+            val rendered = ReportRenderer.render(report, input)
             call.response.header(HttpHeaders.ContentDisposition,
                 ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "$reportName.pdf")
                     .toString()

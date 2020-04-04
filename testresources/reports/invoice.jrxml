@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.12.0.final using JasperReports Library version 6.12.1-ac0eebdb29e4c0985457bab279a6db744d661530  -->
 <jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xmlns="http://jasperreports.sourceforge.net/jasperreports"
@@ -8,11 +7,12 @@
               uuid="4eedbb89-b4f6-4469-9ab6-f642a1688cf7">
     <property name="template.engine" value="tabular_template"/>
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-    <style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false"
-           pdfFontName="Times-Bold"/>
-    <style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false"
-           pdfFontName="Times-Roman"/>
-    <style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+    <style name="Base" isDefault="true" fontSize="10" fontName="DejaVu Sans" pdfFontName="DejaVuSans" isPdfEmbedded="true" />
+    <style name="Title" forecolor="#FFFFFF" fontName="DejaVu Sans" fontSize="50" isBold="false"
+           pdfFontName="DejaVuSans"/>
+    <style name="SubTitle" forecolor="#CCCCCC" fontName="DejaVu Sans" fontSize="18" isBold="false"
+           pdfFontName="DejaVuSans"/>
+    <style name="Row" mode="Transparent" fontName="DejaVu Sans" pdfFontName="DejaVuSans">
         <conditionalStyle>
             <conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
             <style mode="Opaque" backcolor="#EEEFF0"/>
@@ -115,10 +115,6 @@
                 <reportElement x="465" y="10" width="84" height="20" uuid="bb10dbe1-0a4f-4722-9953-c163b63cf979"/>
                 <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
             </textField>
-            <image hAlign="Center">
-                <reportElement x="0" y="0" width="65" height="60" uuid="94883631-a913-43e2-b182-ab8d77d0181e"/>
-                <imageExpression><![CDATA["invoice_logo.png"]]></imageExpression>
-            </image>
             <textField pattern="EEEEE dd MMMMM yyyy">
                 <reportElement x="465" y="30" width="84" height="20" uuid="3836ce65-eca3-4cad-a6de-b1818def0a2b"/>
                 <textFieldExpression><![CDATA["INV0001"]]></textFieldExpression>
@@ -230,7 +226,7 @@
                 <reportElement positionType="Float" mode="Opaque" x="-1" y="150" width="556" height="30"
                                backcolor="#E6E8E9" uuid="36aa233d-4305-48e6-974a-1bbf89bb3c8f"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font fontName="Serif" size="9" isItalic="true"/>
+                    <font size="9" isItalic="true"/>
                 </textElement>
                 <text><![CDATA[THANKYOU FOR YOUR BUSINESS]]></text>
             </staticText>
