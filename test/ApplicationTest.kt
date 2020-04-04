@@ -7,7 +7,9 @@ import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.utils.io.streams.asInput
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import strikt.api.*
+import strikt.assertions.*
+
 
 class ApplicationTest {
     @Test
@@ -35,14 +37,16 @@ class ApplicationTest {
                                     )
                                 ),
                                 Pair(HttpHeaders.ContentType,
-                                    ContentType.fromFileExtension("json").map { it.toString() })
+                                    ContentType.fromFileExtension("json").map(ContentType::toString))
                             )
                         )
                     )
                 )
             }.apply {
-                assertEquals(HttpStatusCode.Created, response.status())
-                assertEquals("application/pdf", response.headers["Content-Type"])
+                expect {
+                    that(response.status()).isEqualTo(HttpStatusCode.Created)
+                    that(response.headers["Content-Type"]).isEqualTo("application/pdf")
+                }
             }
         }
     }
