@@ -34,7 +34,7 @@ class ReportPdfExporter {
         private fun getResourceList(path: String): List<String> {
             val stream = this::class.java.getResourceAsStream("/$path") ?: return emptyList()
             return stream.bufferedReader().use {
-                it.readLines().map { file -> javaClass.classLoader.getResource("$path/$file")!!.file }
+                it.readLines().map { file -> this::class.java.classLoader.getResource("$path/$file")!!.file }
             }
         }
     }
