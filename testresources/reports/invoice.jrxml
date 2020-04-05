@@ -7,7 +7,8 @@
               uuid="4eedbb89-b4f6-4469-9ab6-f642a1688cf7">
     <property name="template.engine" value="tabular_template"/>
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-    <style name="Base" isDefault="true" fontSize="10" fontName="DejaVu Sans" pdfFontName="DejaVuSans" isPdfEmbedded="true" />
+    <style name="Base" isDefault="true" fontSize="10" fontName="DejaVu Sans" pdfFontName="DejaVuSans"
+           isPdfEmbedded="true"/>
     <style name="Title" forecolor="#FFFFFF" fontName="DejaVu Sans" fontSize="50" isBold="false"
            pdfFontName="DejaVuSans"/>
     <style name="SubTitle" forecolor="#CCCCCC" fontName="DejaVu Sans" fontSize="18" isBold="false"
@@ -27,15 +28,7 @@
             <rightPen lineWidth="1.0" lineColor="#000000"/>
         </box>
     </style>
-    <subDataset name="tableDataset" uuid="a54dc323-8f0c-45db-8a95-75ca5141270f">
-        <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-        <queryString>
-            <![CDATA[]]>
-        </queryString>
-    </subDataset>
-    <queryString>
-        <![CDATA[]]>
-    </queryString>
+    <parameter name="RecipientCompany" class="java.lang.String" isForPrompting="true"/>
     <field name="Description" class="java.lang.String"/>
     <field name="Amount" class="java.lang.String"/>
     <field name="IndividualNetPrice" class="java.math.BigDecimal"/>
@@ -57,10 +50,10 @@
                 </textElement>
                 <text><![CDATA[Bill to:]]></text>
             </staticText>
-            <staticText>
+            <textField>
                 <reportElement x="0" y="115" width="120" height="15" uuid="33274f5d-5b7e-4be2-a2ff-65d452a618ed"/>
-                <text><![CDATA[ABC Company]]></text>
-            </staticText>
+                <textFieldExpression><![CDATA[$P{RecipientCompany}]]></textFieldExpression>
+            </textField>
             <line>
                 <reportElement x="0" y="80" width="556" height="1" uuid="806ce5df-1219-4876-ae0c-ca7405b1f246">
                     <property name="local_mesure_unitheight" value="pixel"/>

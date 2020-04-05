@@ -23,7 +23,6 @@ possibility of merging the report onto a letterhead.
 
 ### WIP & planned features
 
-- JRDataSource from JSON data (highest prio, obviously)
 - Automatically generate font configuration XML and `jasperreports_extension.properties`
 - Support merging reports onto pre-rendered letterhead PDFs
 - PDF/A-3 compatibility & ZUGFeRD XML support
