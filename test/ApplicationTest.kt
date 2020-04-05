@@ -9,13 +9,13 @@ import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.utils.io.streams.asInput
 import kotlinx.coroutines.runBlocking
+import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.preflight.Format
-import org.junit.BeforeClass
-import kotlin.test.Test
-import strikt.api.*
-import strikt.assertions.*
+import strikt.api.expect
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 import java.io.File
-import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 class ApplicationTest {
     init {
@@ -54,8 +54,10 @@ class ApplicationTest {
                                             .toString()
                                     )
                                 ),
-                                Pair(HttpHeaders.ContentType,
-                                    ContentType.fromFileExtension("json").map(ContentType::toString))
+                                Pair(
+                                    HttpHeaders.ContentType,
+                                    ContentType.fromFileExtension("json").map(ContentType::toString)
+                                )
                             )
                         )
                     )
@@ -66,6 +68,11 @@ class ApplicationTest {
                     that(response.headers["Content-Type"]).isEqualTo("application/pdf")
                     that(response.byteContent).isValidPdf(Format.PDF_A1A)
                 }
+                val pdfDocument = PDDocument.load(response.byteContent)
+                expectThat(pdfDocument)
+                    .containsText("Foobar Inc")
+                    .containsText("Item 1")
+                    .containsText("1.23")
             }
         }
     }

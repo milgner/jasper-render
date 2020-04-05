@@ -12,7 +12,6 @@ import io.ktor.http.ContentDisposition
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.receiveMultipart
 import io.ktor.response.header
 import io.ktor.response.respondBytes
 import io.ktor.response.respondText
@@ -45,9 +44,10 @@ fun Application.module(testing: Boolean = false) {
         post("/render/{report}") {
             val reportName = call.parameters["report"]!!
             val report = ReportRegistry.load(reportName)
-            val input = UploadProcessor.parse(call.receiveMultipart())
+            val input = UploadProcessor(call).parse()
             val rendered = ReportRenderer.render(report, input)
-            call.response.header(HttpHeaders.ContentDisposition,
+            call.response.header(
+                HttpHeaders.ContentDisposition,
                 ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "$reportName.pdf")
                     .toString()
             )

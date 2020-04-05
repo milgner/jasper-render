@@ -1,11 +1,12 @@
 package net.illunis
 
+import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.preflight.Format
-import org.apache.pdfbox.preflight.PreflightDocument
 import org.apache.pdfbox.preflight.ValidationResult
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException
 import org.apache.pdfbox.preflight.parser.PreflightParser
 import org.apache.pdfbox.preflight.utils.ByteArrayDataSource
+import org.apache.pdfbox.text.PDFTextStripper
 import strikt.api.Assertion
 import java.io.ByteArrayInputStream
 
@@ -28,5 +29,17 @@ fun Assertion.Builder<ByteArray?>.isValidPdf(format: Format) =
             }
         } catch (e: SyntaxValidationException) {
             fail(description = "Parsing PDF failed: ${e.message}")
+        }
+    }
+
+fun Assertion.Builder<PDDocument>.containsText(text: String) =
+    assert("contains \"$text\"") {
+        val textStripper = PDFTextStripper()
+
+        val stringContent = textStripper.getText(it)
+        if (stringContent.contains(text)) {
+            pass()
+        } else {
+            fail()
         }
     }
