@@ -11,7 +11,7 @@ class ReportRegistry {
             val reportName = if (name.endsWith(".jrxml")) name else "$name.jrxml"
 
             if (!compileCache.containsKey(reportName)) {
-                val reportData = this::class.java.getResourceAsStream("/$reportName")
+                val reportData = this::class.java.getResourceAsStream("/reports/$reportName")
                 val report = JasperCompileManager.compileReport(reportData)
                 compileCache[reportName] = report
             }
