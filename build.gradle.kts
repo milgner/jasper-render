@@ -7,6 +7,7 @@ val pdfbox_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.3.71"
+    jacoco
 }
 
 group = "jasper_render"
@@ -22,6 +23,19 @@ repositories {
     maven { url = uri("https://kotlin.bintray.com/ktor") }
     maven { url = uri("http://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts") }
 }
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+        //html.destination = file("${buildDir}/jacocoHtml")
+        html.isEnabled = false
+    }
+}
+
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")

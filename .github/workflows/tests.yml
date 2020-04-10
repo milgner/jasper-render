@@ -12,16 +12,35 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Cache Gradle & dependencies
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-gradle
+        with:
+          path: ./.gradle
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('build.gradle.kts', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
       # Runs a single command using the runners shell
       - name: Run tests
         run: ./gradlew check
+
+      - name: Publish code coverage
+        uses: paambaati/codeclimate-action@v2.5.6
+        env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+          JACOCO_SOURCE_PATH: ${{ github.workspace }}/src
+        with:
+          # The report file must be there, otherwise Code Climate won't find it
+          coverageCommand: ./gradlew jacocoTestReport
+          coverageLocations:
+            "${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco"

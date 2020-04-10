@@ -1,6 +1,7 @@
 package net.illunis
 
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
@@ -18,12 +19,39 @@ import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
+import io.ktor.util.pipeline.PipelineContext
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+    configureMiddleware()
+
+    routing {
+        get("/") {
+            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
+        }
+        post("/render/{report}") {
+            handleRenderReport()
+        }
+    }
+}
+
+private suspend fun PipelineContext<Unit, ApplicationCall>.handleRenderReport() {
+    val reportName = call.parameters["report"]!!
+    val report = ReportRegistry.load(reportName)
+    val input = UploadProcessor(call).parse()
+    val rendered = ReportRenderer.render(report, input)
+    call.response.header(
+        HttpHeaders.ContentDisposition,
+        ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "$reportName.pdf")
+            .toString()
+    )
+    call.respondBytes(rendered, contentType = ContentType.Application.Pdf, status = HttpStatusCode.Created)
+}
+
+private fun Application.configureMiddleware() {
     install(Compression) {
         gzip {
             priority = 1.0
@@ -36,23 +64,4 @@ fun Application.module(testing: Boolean = false) {
 
     install(Authentication) {
     }
-
-    routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
-        post("/render/{report}") {
-            val reportName = call.parameters["report"]!!
-            val report = ReportRegistry.load(reportName)
-            val input = UploadProcessor(call).parse()
-            val rendered = ReportRenderer.render(report, input)
-            call.response.header(
-                HttpHeaders.ContentDisposition,
-                ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "$reportName.pdf")
-                    .toString()
-            )
-            call.respondBytes(rendered, contentType = ContentType.Application.Pdf, status = HttpStatusCode.Created)
-        }
-    }
 }
-
