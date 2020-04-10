@@ -1,3 +1,5 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/c6aab38d200d11c8bad9/maintainability)](https://codeclimate.com/github/milgner/jasper-render/maintainability)
+
 # JasperRender
 
 A HTTP component to render JasperReports from non-JVM applications.

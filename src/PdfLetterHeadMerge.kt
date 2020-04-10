@@ -1,14 +1,13 @@
 package net.illunis
 
-import org.apache.pdfbox.multipdf.Overlay
-import org.apache.pdfbox.pdmodel.PDDocument
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-
+import org.apache.pdfbox.multipdf.Overlay
+import org.apache.pdfbox.pdmodel.PDDocument
 
 class PdfLetterHeadMerge(letterhead: PDDocument) : AutoCloseable {
-    private var overlay: Overlay = Overlay();
+    private var overlay: Overlay = Overlay()
 
     init {
         overlay.setAllPagesOverlayPDF(letterhead)

@@ -14,7 +14,6 @@ import net.sf.jasperreports.engine.JasperReport
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
-import java.lang.Exception
 
 class ReportRenderRequest(private val applicationCall: ApplicationCall) {
     companion object {
@@ -33,18 +32,20 @@ class ReportRenderRequest(private val applicationCall: ApplicationCall) {
             validateRequest()
             renderReport()
         } catch (err: ResourceCache.ResourceNotFoundException) {
-            respondWithProblem("resource-not-found",
+            respondWithProblem(
+                "resource-not-found",
                 "Resource not found",
                 "The resource ${err.resourceName} was not found on the server",
                 HttpStatusCode.NotFound
             )
-        } catch(err: ParseException) {
-            respondWithProblem("unparseable-request",
-            "Cannot parse request",
-            "Cannot parse JSON from request",
+        } catch (err: ParseException) {
+            respondWithProblem(
+                "unparseable-request",
+                "Cannot parse request",
+                "Cannot parse JSON from request",
                 HttpStatusCode.BadRequest
             )
-        } catch(err: InvalidReportJsonException) {
+        } catch (err: InvalidReportJsonException) {
             respondWithProblem(
                 "invalid-json",
                 "Erroneous JSON in request",
@@ -66,9 +67,11 @@ class ReportRenderRequest(private val applicationCall: ApplicationCall) {
             ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "$reportName.pdf")
                 .toString()
         )
-        applicationCall.respondBytes(rendered,
+        applicationCall.respondBytes(
+            rendered,
             ContentType.Application.Pdf,
-            HttpStatusCode.Created)
+            HttpStatusCode.Created
+        )
     }
 
     private var reportData: ReportData? = null
@@ -85,10 +88,14 @@ class ReportRenderRequest(private val applicationCall: ApplicationCall) {
         }
         val errors = HashMap<String, List<String>>()
         missingParametersInRequest(json, report!!).let {
-            if (it.isNotEmpty()) { errors["missing"] = it }
+            if (it.isNotEmpty()) {
+                errors["missing"] = it
+            }
         }
         superfluousParametersInRequest(json, report!!).let {
-            if (it.isNotEmpty()) { errors["unknown"] = it }
+            if (it.isNotEmpty()) {
+                errors["unknown"] = it
+            }
         }
         if (errors.size > 0) {
             throw InvalidReportJsonException(errors)
@@ -120,10 +127,12 @@ class ReportRenderRequest(private val applicationCall: ApplicationCall) {
         }
     }
 
-    private suspend fun respondWithProblem(shortType: String,
-                                           title: String,
-                                           detail: String,
-                                           statusCode: HttpStatusCode) {
+    private suspend fun respondWithProblem(
+        shortType: String,
+        title: String,
+        detail: String,
+        statusCode: HttpStatusCode
+    ) {
         applicationCall.respondText(
             JSONObject.toJSONString(
                 mapOf(

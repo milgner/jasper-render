@@ -2,16 +2,26 @@ package net.illunis
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import io.ktor.http.*
+import io.ktor.http.ContentDisposition
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
-import io.ktor.server.testing.*
+import io.ktor.http.fromFileExtension
+import io.ktor.http.headersOf
+import io.ktor.server.testing.TestApplicationRequest
+import io.ktor.server.testing.contentType
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
+import io.ktor.server.testing.withTestApplication
 import io.ktor.utils.io.streams.asInput
+import java.io.File
+import kotlin.test.Test
 import kotlinx.coroutines.runBlocking
 import org.apache.pdfbox.pdmodel.PDDocument
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
-import java.io.File
-import kotlin.test.Test
 
 class ApplicationTest {
     init {
@@ -101,14 +111,14 @@ class ApplicationTest {
             {},
             headersOf(
                 HttpHeaders.ContentDisposition to
-                    listOf(
-                        ContentDisposition.File
-                            .withParameter(ContentDisposition.Parameters.Name, "report")
-                            .withParameter(ContentDisposition.Parameters.FileName, "report.json")
-                            .toString()
-                    ),
+                        listOf(
+                            ContentDisposition.File
+                                .withParameter(ContentDisposition.Parameters.Name, "report")
+                                .withParameter(ContentDisposition.Parameters.FileName, "report.json")
+                                .toString()
+                        ),
                 HttpHeaders.ContentType to
-                    ContentType.fromFileExtension("json").map(ContentType::toString)
+                        ContentType.fromFileExtension("json").map(ContentType::toString)
             )
         )
     }

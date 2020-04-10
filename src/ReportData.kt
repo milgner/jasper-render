@@ -6,6 +6,6 @@ import org.json.simple.JSONObject
 
 class ReportData(val jsonData: JSONObject) {
     fun getDataSource(): JRDataSource {
-        return JsonItemDataSource(jsonData.get("Items") as JSONArray)
+        return JsonItemsDataSource(jsonData.get("Items") as JSONArray)
     }
 }

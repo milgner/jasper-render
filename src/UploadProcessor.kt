@@ -7,21 +7,22 @@ import io.ktor.http.content.PartData
 import io.ktor.http.content.readAllParts
 import io.ktor.http.content.streamProvider
 import io.ktor.util.asStream
-import kotlinx.coroutines.runBlocking
-import org.json.simple.JSONObject
-import org.json.simple.parser.JSONParser
-import org.json.simple.parser.ParseException
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import kotlinx.coroutines.runBlocking
+import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
+import org.json.simple.parser.ParseException
 
 class UploadProcessor(private val reportName: String, multiPartData: MultiPartData) {
 
     private class InputStreamWithEncoding(val inputStream: InputStream, val encoding: String)
 
     private var allParts: List<PartData>? = null
+
     init {
         runBlocking {
             allParts = multiPartData.readAllParts()
@@ -34,7 +35,8 @@ class UploadProcessor(private val reportName: String, multiPartData: MultiPartDa
                 "Request part of type $contentType missing from request"
             } else {
                 "Request part $partName of type $contentType missing from request"
-            })
+            }
+        )
 
     @Throws(RequestPartNotFound::class)
     private fun readMultipartByType(

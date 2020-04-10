@@ -7,14 +7,13 @@ import net.sf.jasperreports.engine.JRRewindableDataSource
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 
-
 /**
  * An advanced version of the simple JsonDataSource from JasperReports.
  * This version correctly converts values into the types appropriate for their field.
  *
  * @see net.sf.jasperreports.engine.data.JsonDataSource
  */
-class JsonItemDataSource : JRDataSource, JRRewindableDataSource {
+class JsonItemsDataSource : JRDataSource, JRRewindableDataSource {
     private var items: JSONArray
 
     @get:Synchronized
@@ -25,7 +24,7 @@ class JsonItemDataSource : JRDataSource, JRRewindableDataSource {
         items = _items
     }
 
-    constructor(_ref: JsonItemDataSource) {
+    constructor(_ref: JsonItemsDataSource) {
         items = _ref.items
     }
 

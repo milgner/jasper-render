@@ -8,12 +8,7 @@ import io.ktor.features.Compression
 import io.ktor.features.deflate
 import io.ktor.features.gzip
 import io.ktor.features.minimumSize
-import io.ktor.http.ContentDisposition
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.header
-import io.ktor.response.respondBytes
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.post
@@ -46,4 +41,3 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 }
-

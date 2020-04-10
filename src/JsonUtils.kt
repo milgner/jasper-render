@@ -1,8 +1,8 @@
 package net.illunis
 
-import org.json.simple.JSONObject
 import java.math.BigDecimal
 import java.math.BigInteger
+import org.json.simple.JSONObject
 
 class JsonUtils {
     companion object {
@@ -48,6 +48,5 @@ class JsonUtils {
             java.lang.Boolean::class.java to BOOL_CONVERTERS,
             java.lang.Double::class.java to DOUBLE_CONVERTERS
         )
-
     }
 }
