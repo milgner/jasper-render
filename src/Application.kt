@@ -42,32 +42,7 @@ fun Application.module(testing: Boolean = false) {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }
         post("/render/{report}") {
-            val reportName = call.parameters["report"]!!
-            val report = try {
-                ReportRegistry.load(reportName)
-            } catch (err: Throwable) {
-                call.respondText(
-                    "{\"message\": \"no such report: $reportName\"}",
-                    status = HttpStatusCode.NotFound,
-                    contentType = ContentType.Application.Json
-                )
-                return@post
-            }
-
-            val input = UploadProcessor(call).parse()
-            var rendered = ReportRenderer.render(report, input)
-            // TODO: ideally validate letterhead name before anything else, too
-            if (call.parameters.contains("letterhead")) {
-                PdfLetterHeadMerge(call.parameters["letterhead"]!!).use { merge ->
-                    rendered = merge.mergeOntoLetterhead(rendered)
-                }
-            }
-            call.response.header(
-                HttpHeaders.ContentDisposition,
-                ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "$reportName.pdf")
-                    .toString()
-            )
-            call.respondBytes(rendered, contentType = ContentType.Application.Pdf, status = HttpStatusCode.Created)
+            ReportRenderRequest(call).process()
         }
     }
 }

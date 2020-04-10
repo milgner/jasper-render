@@ -4,14 +4,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.http.*
 import io.ktor.http.content.PartData
-import io.ktor.server.testing.TestApplicationRequest
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.server.testing.withTestApplication
+import io.ktor.server.testing.*
 import io.ktor.utils.io.streams.asInput
 import kotlinx.coroutines.runBlocking
 import org.apache.pdfbox.pdmodel.PDDocument
 import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 import java.io.File
 import kotlin.test.Test
 
@@ -32,7 +30,7 @@ class ApplicationTest {
     fun testRender() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Post, "/render/invoice") {
-                sendInvoiceTestJson()
+                sendTestJson("invoice")
             }.apply {
                 expectThat(response).returnsPdf()
                 val pdfDocument = PDDocument.load(response.byteContent)
@@ -44,11 +42,49 @@ class ApplicationTest {
         }
     }
 
+    private val utf8ProblemJson = ContentType.Application.ProblemJson.withParameter("charset", "UTF-8")
+
+    @Test
+    fun testInvalidJson() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/render/invoice") {
+                sendTestJson("invalid")
+            }.apply {
+                expectThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
+                expectThat(response.contentType()).isEqualTo(utf8ProblemJson)
+            }
+        }
+    }
+
+    @Test
+    fun testIncompleteJson() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/render/invoice") {
+                sendTestJson("missing_param")
+            }.apply {
+                expectThat(response.status()).isEqualTo(HttpStatusCode.UnprocessableEntity)
+                expectThat(response.contentType()).isEqualTo(utf8ProblemJson)
+            }
+        }
+    }
+
+    @Test
+    fun testSuperfluousParameter() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/render/invoice") {
+                sendTestJson("unknown_param")
+            }.apply {
+                expectThat(response.status()).isEqualTo(HttpStatusCode.UnprocessableEntity)
+                expectThat(response.contentType()).isEqualTo(utf8ProblemJson)
+            }
+        }
+    }
+
     @Test
     fun testLetterheadMerge() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Post, "/render/invoice?letterhead=example") {
-                sendInvoiceTestJson()
+                sendTestJson("invoice")
             }.apply {
                 expectThat(response).returnsPdf()
                 val pdfDocument = PDDocument.load(response.byteContent)
@@ -59,34 +95,32 @@ class ApplicationTest {
         }
     }
 
-    private fun TestApplicationRequest.sendInvoiceTestJson() {
-        val boundary = "***reportfoo***"
+    private fun reportUploadFromResource(filename: String): PartData {
+        return PartData.FileItem(
+            { this::class.java.getResourceAsStream("/$filename.json").asInput() },
+            {},
+            headersOf(
+                HttpHeaders.ContentDisposition to
+                    listOf(
+                        ContentDisposition.File
+                            .withParameter(ContentDisposition.Parameters.Name, "report")
+                            .withParameter(ContentDisposition.Parameters.FileName, "report.json")
+                            .toString()
+                    ),
+                HttpHeaders.ContentType to
+                    ContentType.fromFileExtension("json").map(ContentType::toString)
+            )
+        )
+    }
+
+    val testBoundary = "***REPORT-TESTING***"
+    private fun TestApplicationRequest.sendTestJson(filename: String) {
         addHeader(
             HttpHeaders.ContentType,
-            ContentType.MultiPart.FormData.withParameter("boundary", boundary).toString()
+            ContentType.MultiPart.FormData.withParameter("boundary", testBoundary).toString()
         )
         setBody(
-            boundary, listOf(
-                PartData.FileItem(
-                    { this::class.java.getResourceAsStream("/invoice.json").asInput() },
-                    {},
-                    headersOf(
-                        Pair(
-                            HttpHeaders.ContentDisposition,
-                            listOf(
-                                ContentDisposition.File
-                                    .withParameter(ContentDisposition.Parameters.Name, "report")
-                                    .withParameter(ContentDisposition.Parameters.FileName, "report.json")
-                                    .toString()
-                            )
-                        ),
-                        Pair(
-                            HttpHeaders.ContentType,
-                            ContentType.fromFileExtension("json").map(ContentType::toString)
-                        )
-                    )
-                )
-            )
+            testBoundary, listOf(reportUploadFromResource(filename))
         )
     }
 }

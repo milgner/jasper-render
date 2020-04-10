@@ -7,28 +7,11 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 
-class PdfLetterHeadMerge(letterhead: String) : AutoCloseable {
-    companion object {
-        // TODO: this is the same pattern as in ReportRegistry. Unify it.
-        private var cache = HashMap<String, PDDocument>()
-        fun getLetterhead(name: String): PDDocument {
-            if (!cache.containsKey(name)) {
-                this::class.java.getResourceAsStream("/letterheads/$name.pdf").use { input ->
-                    if (input == null) {
-                        // TODO: maybe introduce custom exception classes to return proper HTTP status codes?
-                        throw IOException("No letterhead named $name.pdf exists")
-                    }
-                    cache[name] = PDDocument.load(input)
-                }
-            }
-            return cache[name]!!
-        }
-    }
-
+class PdfLetterHeadMerge(letterhead: PDDocument) : AutoCloseable {
     private var overlay: Overlay = Overlay();
 
     init {
-        overlay.setAllPagesOverlayPDF(getLetterhead(letterhead))
+        overlay.setAllPagesOverlayPDF(letterhead)
     }
 
     override fun close() {

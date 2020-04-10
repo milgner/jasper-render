@@ -1,0 +1,15 @@
+{
+  "invoice": {
+    "RecipientCompany": "Foobar Inc",
+    "ExtraneousParam": "Will cause an error",
+    "Items": [
+      {
+        "Description": "Item 1",
+        "Amount": 2,
+        "IndividualNetPrice": "1.23",
+        "Tax": "0.46",
+        "TotalGrossPrice": 2.92
+      }
+    ]
+  }
+}
