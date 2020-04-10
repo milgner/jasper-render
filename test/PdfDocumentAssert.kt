@@ -1,5 +1,6 @@
 package net.illunis
 
+import java.io.ByteArrayInputStream
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.preflight.Format
 import org.apache.pdfbox.preflight.ValidationResult
@@ -8,7 +9,6 @@ import org.apache.pdfbox.preflight.parser.PreflightParser
 import org.apache.pdfbox.preflight.utils.ByteArrayDataSource
 import org.apache.pdfbox.text.PDFTextStripper
 import strikt.api.Assertion
-import java.io.ByteArrayInputStream
 
 fun Assertion.Builder<ByteArray?>.isValidPdf(format: Format) =
     assert("is a valid ${format.fname} document") {

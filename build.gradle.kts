@@ -7,6 +7,7 @@ val pdfbox_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.3.71"
+    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
 }
 
 group = "jasper_render"

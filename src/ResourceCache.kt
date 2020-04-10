@@ -4,9 +4,12 @@ import java.io.IOException
 import java.io.InputStream
 
 typealias LoaderFun<T> = (InputStream) -> T
-class ResourceCache<T>(private val directory: String,
-                       private val extension: String,
-                       private val loader: LoaderFun<T>) {
+
+class ResourceCache<T>(
+    private val directory: String,
+    private val extension: String,
+    private val loader: LoaderFun<T>
+) {
     class ResourceNotFoundException(val resourceName: String) : IOException("Resource $resourceName not found")
 
     private val cache = HashMap<String, T>()
