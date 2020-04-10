@@ -1,54 +1,49 @@
 package net.illunis
 
-import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.readAllParts
 import io.ktor.http.content.streamProvider
-import io.ktor.request.receiveMultipart
 import io.ktor.util.asStream
 import kotlinx.coroutines.runBlocking
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.json.simple.parser.ParseException
+import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 
-class UploadProcessor(applicationCall: ApplicationCall) {
+class UploadProcessor(private val reportName: String, multiPartData: MultiPartData) {
 
     private class InputStreamWithEncoding(val inputStream: InputStream, val encoding: String)
 
-    private val call = applicationCall
-    private val reportName = applicationCall.parameters["report"]!!
-
-    fun parse(): ReportData {
-        val json = reportJsonFromRequest() ?: throw IllegalArgumentException()
-
-        return ReportData(json, null)
-    }
-
-    private fun reportJsonFromRequest(): JSONObject? {
-        val streamWithEncoding = readMultipartByType(ContentType.Application.Json) ?: return null
-        return readJson(streamWithEncoding)
-    }
-
-    private var multiPartData: List<PartData>? = null
-    private fun getMultipartData(): List<PartData> {
-        if (multiPartData == null) {
-            runBlocking { multiPartData = call.receiveMultipart().readAllParts() }
+    private var allParts: List<PartData>? = null
+    init {
+        runBlocking {
+            allParts = multiPartData.readAllParts()
         }
-        return multiPartData ?: emptyList()
     }
 
+    class RequestPartNotFound(contentType: ContentType, partName: String?) :
+        IOException(
+            if (partName == null) {
+                "Request part of type $contentType missing from request"
+            } else {
+                "Request part $partName of type $contentType missing from request"
+            })
+
+    @Throws(RequestPartNotFound::class)
     private fun readMultipartByType(
         contentType: ContentType,
         name: String? = null
     ): InputStreamWithEncoding? {
-        val relevantPart = getMultipartData().find { part ->
+        val relevantPart = allParts!!.find { part ->
             (part.contentType == contentType) && (name == null || part.name == name)
-        } ?: return null
+        } ?: throw(RequestPartNotFound(contentType, name))
 
         val encoding = relevantPart.headers[HttpHeaders.ContentEncoding] ?: "UTF-8"
 
@@ -59,27 +54,25 @@ class UploadProcessor(applicationCall: ApplicationCall) {
             is PartData.BinaryItem -> {
                 relevantPart.provider().asStream()
             }
+            is PartData.FormItem -> {
+                ByteArrayInputStream(relevantPart.value.toByteArray(StandardCharsets.UTF_8))
+            }
             else -> {
-                throw IllegalArgumentException()
+                throw RequestPartNotFound(contentType, name)
             }
         }
         return InputStreamWithEncoding(inputStream, encoding)
     }
 
-    private fun readJson(data: InputStreamWithEncoding): JSONObject? {
-        return try {
-            val json = JSONParser().parse(InputStreamReader(data.inputStream, data.encoding))
-            // it might be an array which isn't supported for the time being (will be added for batch support)
-            // TODO: introduce proper errors so we can distinguish error codes and raise a proper 422 here
+    @Throws(ParseException::class)
+    fun parseJsonFromRequest(name: String): JSONObject? {
+        val data = readMultipartByType(ContentType.Application.Json, name) ?: return null
+        InputStreamReader(data.inputStream, data.encoding).use { input ->
+            val json = JSONParser().parse(input)
             if (json is JSONObject && json.containsKey(reportName) && json[reportName] is JSONObject) {
-                json[reportName] as JSONObject
-            } else {
-                throw IllegalArgumentException()
+                return json[reportName] as JSONObject
             }
-        } catch (e: IOException) {
-            null
-        } catch (e: ParseException) {
-            null
+            return null
         }
     }
 }

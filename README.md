@@ -2,7 +2,7 @@
 
 A HTTP component to render JasperReports from non-JVM applications.
 
-After working in many different programming languages and frameworks, I have
+After working in many programming languages and frameworks, I have
 yet to encounter a PDF-rendering library for reports that compares with the
 functionality in JasperReports.
 Although simple applications might be content with using HTML->PDF conversion
@@ -16,13 +16,11 @@ possibility of merging the report onto a letterhead.
 1. Clone the repository
 2. Put your JRXML files along with any referenced files (images etc) into the `resources/reports` directory
 3. For PDF/A compatibility: you'll require a proper sRGB ICC profile. You can find official profiles on [color.org](http://www.color.org/srgbprofiles.xalter).
- Download the ICC profile and put it into the `resources/icc` directory
+ Download the ICC profile and put it into the `resources/icc` directory.
 4. Still work in progress: put any fonts used in your reports into the `resources/fonts` directory
 5. Start the server with `./gradlew run`
 6. You can now render reports by `POST`ing JSON files to `/render/<reportName>`
 
-### WIP & planned features
+## Planned features
 
-- Automatically generate font configuration XML and `jasperreports_extension.properties`
-- Support merging reports onto pre-rendered letterhead PDFs
 - PDF/A-3 compatibility & ZUGFeRD XML support

@@ -42,16 +42,7 @@ fun Application.module(testing: Boolean = false) {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }
         post("/render/{report}") {
-            val reportName = call.parameters["report"]!!
-            val report = ReportRegistry.load(reportName)
-            val input = UploadProcessor(call).parse()
-            val rendered = ReportRenderer.render(report, input)
-            call.response.header(
-                HttpHeaders.ContentDisposition,
-                ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "$reportName.pdf")
-                    .toString()
-            )
-            call.respondBytes(rendered, contentType = ContentType.Application.Pdf, status = HttpStatusCode.Created)
+            ReportRenderRequest(call).process()
         }
     }
 }
