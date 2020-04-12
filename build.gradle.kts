@@ -34,6 +34,8 @@ dependencies {
     implementation("io.ktor:ktor-auth-jwt:$ktor_version")
     implementation("net.sf.jasperreports:jasperreports:$jasperreports_version")
     implementation("org.apache.pdfbox:pdfbox:$pdfbox_version")
+    implementation("javax.activation:activation:1.1.1")
+    runtime("javax.xml.bind:jaxb-api:2.3.1")
 
     testImplementation("org.apache.pdfbox:preflight:$pdfbox_version")
     testImplementation(platform("io.strikt:strikt-bom:0.25.0"))
